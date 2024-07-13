@@ -3,11 +3,26 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: #003366; /* Azul oscuro */
   }
   
-  .header a {
-    color: #000;
-    text-decoration: none;
+  
+  .header .navbar-brand,
+  .header .nav-link {
+    color: #fff !important; /* Texto blanco */
+  }
+  
+  .header .nav-link {
+    margin-right: 1rem;
+  }
+  
+  .header .navbar-brand img {
+    margin-right: 0.5rem;
+  }
+  img.d-inline-block.align-top {
+    height: 6rem;
+  }
+  .navbar-expand-lg .navbar-collapse {
+    justify-content: flex-end;
   }
   
