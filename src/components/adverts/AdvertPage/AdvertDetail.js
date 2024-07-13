@@ -1,31 +1,25 @@
 import React from 'react';
+import { Card, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import { Card } from 'react-bootstrap';
+import { advertPropTypes } from '../propTypes';
 
-function AdvertDetail({ advert }) {
+function AdvertDetail({ advert, onDelete }) {
   return (
     <Card>
-      <Card.Img variant="top" src={advert.photo || '/placeholder.png'} />
       <Card.Body>
         <Card.Title>{advert.name}</Card.Title>
         <Card.Text>Precio: {advert.price} €</Card.Text>
         <Card.Text>Tipo: {advert.sale ? 'Venta' : 'Compra'}</Card.Text>
-        <Card.Text>Descripción: {advert.description}</Card.Text>
         <Card.Text>Tags: {advert.tags.join(', ')}</Card.Text>
+        <Button variant="danger" onClick={() => onDelete(advert.id)}>Eliminar</Button>
       </Card.Body>
     </Card>
   );
 }
 
 AdvertDetail.propTypes = {
-  advert: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    sale: PropTypes.bool.isRequired,
-    description: PropTypes.string,
-    tags: PropTypes.arrayOf(PropTypes.string).isRequired,
-    photo: PropTypes.string,
-  }).isRequired,
+  advert: PropTypes.shape(advertPropTypes).isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default AdvertDetail;

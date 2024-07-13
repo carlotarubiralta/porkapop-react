@@ -1,58 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import client from '../../../api/client';
+import { useParams, useHistory, useNavigate } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import { getAdvert, deleteAdvert } from '../service';
 import AdvertDetail from './AdvertDetail';
-import { removeToken } from '../../../utils/storage';
 
 function AdvertPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const history = useNavigate();
   const [advert, setAdvert] = useState(null);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAdvert = async () => {
       try {
-        const response = await client.get(`/api/v1/adverts/${id}`);
-        setAdvert(response.data);
+        const fetchedAdvert = await getAdvert(id);
+        setAdvert(fetchedAdvert);
       } catch (error) {
-        setError('No se pudo obtener el anuncio.');
-        console.error('Error al obtener el anuncio:', error);
+        console.error('Error fetching advert:', error);
+        history.push('/not-found');
       }
     };
 
     fetchAdvert();
-  }, [id]);
+  }, [id, history]);
 
-  const handleDelete = async () => {
+  const handleDelete = async (id) => {
     try {
-      await client.delete(`/api/v1/adverts/${id}`);
-      navigate('/adverts');
+      await deleteAdvert(id);
+      history.push('/adverts');
     } catch (error) {
-      console.error('Error al eliminar el anuncio:', error);
-      alert('No se pudo eliminar el anuncio.');
+      console.error('Error deleting advert:', error);
     }
   };
 
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  if (!advert) {
-    return <p>Cargando...</p>;
-  }
-
   return (
     <Container>
-      <Row className="justify-content-md-center">
-        <Col md="8">
-          <AdvertDetail advert={advert} />
-          <Button variant="danger" onClick={handleDelete}>
-            Eliminar Anuncio
-          </Button>
-        </Col>
-      </Row>
+      {advert ? <AdvertDetail advert={advert} onDelete={handleDelete} /> : <p>Cargando...</p>}
     </Container>
   );
 }

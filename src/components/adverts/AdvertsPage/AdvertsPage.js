@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import client from '../../../api/client';
+import { getAdverts } from '../service';
 import AdvertsList from './AdvertsList';
 import FiltersForm from './FiltersForm';
 import EmptyList from './EmptyList';
@@ -10,12 +10,14 @@ import { filterByName, filterBySale, filterByPrice, filterByTags } from './filte
 function AdvertsPage() {
   const [adverts, setAdverts] = useState([]);
   const [filters, setFilters] = useState({});
+  const [filteredAdverts, setFilteredAdverts] = useState([]);
 
   useEffect(() => {
     const fetchAdverts = async () => {
       try {
-        const response = await client.get('/api/v1/adverts');
-        setAdverts(response.data);
+        const fetchedAdverts = await getAdverts();
+        setAdverts(fetchedAdverts);
+        setFilteredAdverts(fetchedAdverts);
       } catch (error) {
         console.error('Error al obtener los anuncios:', error);
       }
@@ -24,44 +26,47 @@ function AdvertsPage() {
     fetchAdverts();
   }, []);
 
-  const applyFilters = (adverts, filters) => {
-    let filteredAdverts = adverts;
+  useEffect(() => {
+    let result = adverts;
     if (filters.name) {
-      filteredAdverts = filterByName(filteredAdverts, filters.name);
+      result = filterByName(result, filters.name);
     }
     if (filters.sale !== undefined) {
-      filteredAdverts = filterBySale(filteredAdverts, filters.sale);
+      result = filterBySale(result, filters.sale);
     }
-    if (filters.price) {
+    if (filters.price && filters.price !== '-') {
       const [minPrice, maxPrice] = filters.price.split('-').map(Number);
-      filteredAdverts = filterByPrice(filteredAdverts, minPrice, maxPrice);
+      result = filterByPrice(result, minPrice, maxPrice);
     }
     if (filters.tags && filters.tags.length) {
-      filteredAdverts = filterByTags(filteredAdverts, filters.tags);
+      result = filterByTags(result, filters.tags);
     }
-    return filteredAdverts;
-  };
+    setFilteredAdverts(result);
+  }, [filters, adverts]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
   };
 
-  const filteredAdverts = applyFilters(adverts, filters);
+  const handleResetFilters = () => {
+    setFilters({});
+    setFilteredAdverts(adverts);
+  };
 
   return (
     <Container>
       <Row className="justify-content-md-center">
         <Col md="8">
           <h2>Anuncios</h2>
-          <FiltersForm onFilterChange={handleFilterChange} />
+          <FiltersForm onFilterChange={handleFilterChange} onResetFilters={handleResetFilters} />
+          <Button as={Link} to="/adverts/new" variant="primary" className="mb-3">
+            Crear Anuncio
+          </Button>
           {filteredAdverts.length ? (
             <AdvertsList adverts={filteredAdverts} />
           ) : (
             <EmptyList />
           )}
-          <Button as={Link} to="/adverts/new" variant="primary">
-            Crear Anuncio
-          </Button>
         </Col>
       </Row>
     </Container>

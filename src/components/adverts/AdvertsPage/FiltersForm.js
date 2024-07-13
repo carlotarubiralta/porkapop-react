@@ -1,43 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import client from '../../../api/client';
+import SelectTags from '../SelectTags';
 
-function FiltersForm({ onFilterChange }) {
+function FiltersForm({ onFilterChange, onResetFilters }) {
   const [name, setName] = useState('');
   const [sale, setSale] = useState('todos');
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
   const [tags, setTags] = useState([]);
-  const [availableTags, setAvailableTags] = useState([]);
-
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await client.get('/api/v1/adverts/tags');
-        setAvailableTags(response.data);
-      } catch (error) {
-        console.error('Error al obtener los tags:', error);
-      }
-    };
-
-    fetchTags();
-  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onFilterChange({
+    const filters = {
       name,
       sale: sale === 'todos' ? undefined : sale === 'venta',
       price: `${priceMin}-${priceMax}`,
       tags,
-    });
+    };
+    onFilterChange(filters);
+  };
+
+  const handleReset = () => {
+    setName('');
+    setSale('todos');
+    setPriceMin('');
+    setPriceMax('');
+    setTags([]);
+    onResetFilters();
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} className="mb-4 p-3 shadow-sm rounded" style={{ border: '1px solid #ddd' }}>
       <Row>
-        <Col>
+        <Col md={6}>
           <Form.Group controlId="filterName">
             <Form.Label>Nombre</Form.Label>
             <Form.Control
@@ -48,7 +45,7 @@ function FiltersForm({ onFilterChange }) {
             />
           </Form.Group>
         </Col>
-        <Col>
+        <Col md={6}>
           <Form.Group controlId="filterSale">
             <Form.Label>Tipo</Form.Label>
             <Form.Control
@@ -64,7 +61,7 @@ function FiltersForm({ onFilterChange }) {
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col md={6}>
           <Form.Group controlId="filterPriceMin">
             <Form.Label>Precio Mínimo</Form.Label>
             <Form.Control
@@ -75,7 +72,7 @@ function FiltersForm({ onFilterChange }) {
             />
           </Form.Group>
         </Col>
-        <Col>
+        <Col md={6}>
           <Form.Group controlId="filterPriceMax">
             <Form.Label>Precio Máximo</Form.Label>
             <Form.Control
@@ -87,28 +84,24 @@ function FiltersForm({ onFilterChange }) {
           </Form.Group>
         </Col>
       </Row>
-      <Form.Group controlId="filterTags">
-        <Form.Label>Tags</Form.Label>
-        <Form.Control
-          as="select"
-          multiple
-          value={tags}
-          onChange={(e) => setTags(Array.from(e.target.selectedOptions, option => option.value))}
-        >
-          {availableTags.map(tag => (
-            <option key={tag} value={tag}>{tag}</option>
-          ))}
-        </Form.Control>
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Filtrar
-      </Button>
+      <SelectTags selectedTags={tags} onChange={setTags} />
+      <Row>
+        <Col>
+          <Button variant="primary" type="submit" className="mr-2">
+            Filtrar
+          </Button>
+          <Button variant="danger" onClick={handleReset} className="mr-2">
+            Borrar Filtros
+          </Button>
+        </Col>
+      </Row>
     </Form>
   );
 }
 
 FiltersForm.propTypes = {
   onFilterChange: PropTypes.func.isRequired,
+  onResetFilters: PropTypes.func.isRequired,
 };
 
 export default FiltersForm;
