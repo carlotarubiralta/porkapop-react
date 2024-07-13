@@ -1,70 +1,176 @@
-# Getting Started with Create React App
+# Nodepop React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Esta es una aplicación de tipo dashboard que permite gestionar el API de anuncios Nodepop.
 
-## Available Scripts
+## Requisitos
 
-In the project directory, you can run:
+- Node.js
+- npm
 
-### `npm start`
+## Instalación
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Backend
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Clonar el repositorio del backend Nodepop API:
+```bash
+   git clone https://github.com/davidjj76/nodepop-api.git
+   cd nodepop-api
+```
+2. Instalar dependecias
+```bash
+    npm install
+```
+3. Ejecutar rl servidor del backend
+```bash
+npm start
+```
 
-### `npm test`
+### Frontend
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Clona el repositorio
+```bash
+   git clone https://github.com/carlotarubiralta/porkapop-react.git
+   cd nodepop-react-app
+```
+2. Instalar dependecias
+```bash
+    npm install
+```
+3. Crear archivo .env y configurar la URL del API
+```bash
+    REACT_APP_API_URL=http://localhost:3001
+```
+4. Ejecuta la aplicación
+```bash
+npm start
+```
+## Endpoints del Backend
 
-### `npm run build`
+La API de Nodepop proporciona los siguientes endpoints:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Autenticación
+POST /api/auth/signup: Permite crear usuarios.
+GET /api/auth/me: Devuelve la información del usuario autenticado.
+POST /api/auth/login: Devuelve un token de acceso cuando se proporcionan un email y password correctos.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Anuncios
+GET /api/v1/adverts: Devuelve un listado de anuncios con posibilidad de aplicar filtros.
+Filtros disponibles:
+name=coche: Filtra por nombre.
+sale=true/false: Filtra por tipo de anuncio (venta/compra).
+price=0-25000: Filtra por rango de precio.
+tags=motor,work: Filtra por etiquetas.
+POST /api/v1/adverts: Crea un anuncio.
+GET /api/v1/adverts/tags: Devuelve el listado de etiquetas disponibles.
+GET /api/v1/adverts/:id: Devuelve un único anuncio por su ID.
+DELETE /api/v1/adverts/:id: Borra un anuncio por su ID.
+Nota: Todos los endpoints bajo /adverts requieren que se envíe el token proporcionado en el endpoint de login. El token debe enviarse en la cabecera de la petición de la siguiente forma:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+Header['Authorization'] = Bearer ${token}
+````
 
-### `npm run eject`
+## Uso
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Login: Permite a los usuarios autenticarse.
+Crear Anuncio: Permite crear un nuevo anuncio.
+Listar Anuncios: Muestra todos los anuncios disponibles.
+Detalle del Anuncio: Muestra los detalles de un anuncio específico.
+Filtros: Permite filtrar los anuncios por nombre, tipo, precio y etiquetas.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Estructura del proyecto
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+└── 📁porkapop-react
+    └── .DS_Store
+    └── .env
+    └── .gitignore
+    └── README.md
+    └── package-lock.json
+    └── package.json
+    └── 📁public
+        └── favicon.ico
+        └── index.html
+        └── logo192.png
+        └── logo512.png
+        └── manifest.json
+        └── robots.txt
+    └── 📁src
+        └── .DS_Store
+        └── App.css
+        └── App.test.js
+        └── 📁api
+            └── client.js
+        └── 📁assets
+            └── 📁images
+                └── logo.png
+                └── placeholder.png
+        └── 📁components
+            └── 📁adverts
+                └── 📁AdvertPage
+                    └── AdvertDetail.js
+                    └── AdvertPage.js
+                    └── index.js
+                └── 📁AdvertsPage
+                    └── AdvertsList.js
+                    └── AdvertsPage.js
+                    └── EmptyList.js
+                    └── FiltersForm.js
+                    └── filters.js
+                    └── index.js
+                └── 📁NewAdvertPage
+                    └── NewAdvertForm.js
+                    └── NewAdvertPage.js
+                    └── index.js
+                └── 📁SelectTags
+                    └── SelectTags.js
+                    └── index.js
+                └── propTypes.js
+                └── service.js
+            └── 📁app
+                └── App.js
+                └── NotFoundPage.js
+            └── 📁auth
+                └── 📁AuthButton
+                    └── AuthButton.js
+                    └── index.js
+                └── 📁LoginPage
+                    └── LoginForm.js
+                    └── LoginPage.js
+                    └── index.js
+                └── 📁RequireAuth
+                    └── RequireAuth.js
+                    └── index.js
+                └── context.js
+                └── service.js
+            └── 📁layout
+                └── Footer.css
+                └── Footer.js
+                └── Header.css
+                └── Header.js
+                └── Layout.css
+                └── Layout.js
+                └── index.js
+        └── 📁hooks
+            └── useForm.js
+        └── index.css
+        └── index.js
+        └── logo.svg
+        └── reportWebVitals.js
+        └── setupTests.js
+        └── 📁utils
+            └── navigateAfterRequestError.js
+            └── storage.js
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Contribuir
+Haz un fork del proyecto.
+Crea una nueva rama (git checkout -b feature/nueva-caracteristica).
+Realiza tus cambios y haz un commit (git commit -am 'Añadir nueva característica').
+Empuja la rama (git push origin feature/nueva-caracteristica).
+Abre un Pull Request.
 
-## Learn More
+## Licencia
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Este proyecto está licenciado bajo los términos de la licencia MIT. Consulta el archivo LICENSE para más detalles.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
