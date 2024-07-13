@@ -3,18 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap';
 import client from '../../../api/client';
 import LoginForm from './LoginForm';
+import { setToken } from '../../../utils/storage';
 
 function LoginPage() {
   const navigate = useNavigate();
 
-  const handleLogin = async ({ email, password, rememberMe }) => {
+  const handleLogin = async ({ email, password }) => {
     try {
       const response = await client.post('/api/auth/login', { email, password });
-      const { token } = response.data;
+      const token = response.data.accessToken; // Ajustado para usar accessToken
 
-      localStorage.setItem('token', token); // Guardar el token siempre en localStorage
-
-      navigate('/adverts');
+      if (token) {
+        setToken(token);
+        navigate('/adverts');
+      } else {
+        throw new Error('Token no encontrado en la respuesta del servidor');
+      }
     } catch (error) {
       console.error('Inicio de sesión fallido:', error);
       alert('Inicio de sesión fallido. Por favor, verifica tus credenciales.');
