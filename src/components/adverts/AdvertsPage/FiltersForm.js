@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import client from '../../../api/client';
 
 function FiltersForm({ onFilterChange }) {
   const [name, setName] = useState('');
@@ -8,6 +9,20 @@ function FiltersForm({ onFilterChange }) {
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
   const [tags, setTags] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await client.get('/api/v1/adverts/tags');
+        setAvailableTags(response.data);
+      } catch (error) {
+        console.error('Error al obtener los tags:', error);
+      }
+    };
+
+    fetchTags();
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -72,6 +87,19 @@ function FiltersForm({ onFilterChange }) {
           </Form.Group>
         </Col>
       </Row>
+      <Form.Group controlId="filterTags">
+        <Form.Label>Tags</Form.Label>
+        <Form.Control
+          as="select"
+          multiple
+          value={tags}
+          onChange={(e) => setTags(Array.from(e.target.selectedOptions, option => option.value))}
+        >
+          {availableTags.map(tag => (
+            <option key={tag} value={tag}>{tag}</option>
+          ))}
+        </Form.Control>
+      </Form.Group>
       <Button variant="primary" type="submit">
         Filtrar
       </Button>

@@ -29,7 +29,7 @@ function AdvertsPage() {
     if (filters.name) {
       filteredAdverts = filterByName(filteredAdverts, filters.name);
     }
-    if (filters.sale) {
+    if (filters.sale !== undefined) {
       filteredAdverts = filterBySale(filteredAdverts, filters.sale);
     }
     if (filters.price) {
