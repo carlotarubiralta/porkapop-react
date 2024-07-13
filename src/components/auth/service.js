@@ -11,3 +11,7 @@ export const signup = (userData) => {
 export const getUser = () => {
   return client.get('/api/auth/me').then(response => response.data);
 };
+
+export const logout = () => {
+  localStorage.removeItem('auth');
+};
